@@ -6,14 +6,16 @@ use spectre_bip32::secp256k1::rand::{
     distributions::{Alphanumeric, DistString},
 };
 use spectre_consensus_core::constants::SOMPI_PER_SPECTRE;
+use spectre_rpc_core::GetServerInfoResponse;
 use spectre_wallet_core::{
     prelude::Account,
     rpc::{Rpc, RpcApi, RpcCtl},
     tx::{Fees, Generator, GeneratorSettings, GeneratorSummary, PaymentOutputs},
     wallet::Wallet,
 };
-use spectre_wrpc_client::prelude::NetworkType;
+use spectre_wrpc_client::{prelude::NetworkType, SpectreRpcClient};
 use tokio::task::yield_now;
+use tracing::info;
 
 use crate::{error::Error, result::Result};
 
@@ -96,4 +98,25 @@ pub fn get_tx_explorer_url(tx_id: &str, network_type: NetworkType) -> String {
     };
 
     return format!("https://{}.spectre-network.org/txs/{}", sub_domain, tx_id);
+}
+
+pub async fn check_node_status(wrpc_client: &Arc<SpectreRpcClient>) -> Result<()> {
+    let GetServerInfoResponse {
+        is_synced,
+        server_version,
+        network_id,
+        has_utxo_index,
+        ..
+    } = wrpc_client.get_server_info().await?;
+
+    info!(
+        "Node connected, Version {} - Network {} - In Sync? {} - Has UTXO Index? {}",
+        server_version, network_id, is_synced, has_utxo_index
+    );
+
+    if is_synced {
+        Ok(())
+    } else {
+        Err("Node is not synced".into())
+    }
 }

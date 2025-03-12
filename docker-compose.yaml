@@ -5,6 +5,7 @@ services:
       - wallet-data:/spectre-tipper-wallets
       - wallet-store:/root/.spectre/
     environment:
+      RUST_LOG: "none,discord_bot=info,core=info"
       DISCORD_TOKEN: "${DISCORD_TOKEN}"
       SPECTRE_NETWORK: "mainnet"
       WALLET_DATA_PATH: "spectre-tipper-wallets"
