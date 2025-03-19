@@ -2,7 +2,14 @@
 resolver = '2'
 members = [
     'discord_bot',
+    'telegram_bot',
     'libs/core',
+]
+
+# define the default run for the workspace (discord_bot)
+default-members = [
+    'discord_bot',
+    'telegram_bot'
 ]
 
 [profile.release]

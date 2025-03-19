@@ -1,0 +1,16 @@
+[package]
+name = "telegram_bot"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+teloxide = { version = "0.13", features = ["macros"] }
+tokio = { version =  "1.8", features = ["rt-multi-thread", "macros"] }
+core = { path = "../libs/core" }
+spectre-wrpc-client = { git = "https://github.com/spectre-project/rusty-spectre.git", branch = "main" }
+spectre-wallet-core = { git = "https://github.com/spectre-project/rusty-spectre.git", branch = "main" }
+spectre-wallet-keys = { git = "https://github.com/spectre-project/rusty-spectre.git", branch = "main" }
+workflow-core = { version = "0.18.0" }
+dotenvy = "0.15.7"
+tracing = "0.1"
+tracing-subscriber = {version = "0.3", features=["env-filter"]}
