@@ -657,7 +657,7 @@ dependencies = [
  "spectre-wallet-core",
  "spectre-wallet-keys",
  "spectre-wrpc-client",
- "thiserror 1.0.69",
+ "thiserror 2.0.12",
  "tokio",
  "tracing",
 ]
@@ -1047,6 +1047,7 @@ dependencies = [
  "tokio",
  "tracing",
  "tracing-subscriber",
+ "user",
  "workflow-core",
 ]
 
@@ -4529,13 +4530,16 @@ version = "0.1.0"
 dependencies = [
  "core",
  "dotenvy",
+ "futures",
  "spectre-wallet-core",
  "spectre-wallet-keys",
  "spectre-wrpc-client",
  "teloxide",
+ "thiserror 2.0.12",
  "tokio",
  "tracing",
  "tracing-subscriber",
+ "user",
  "workflow-core",
 ]
 
@@ -5177,6 +5181,14 @@ dependencies = [
  "idna",
  "percent-encoding",
  "serde",
+]
+
+[[package]]
+name = "user"
+version = "0.1.0"
+dependencies = [
+ "serenity",
+ "teloxide",
 ]
 
 [[package]]

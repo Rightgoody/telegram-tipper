@@ -1,0 +1,8 @@
+[package]
+name = "user"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+serenity = { version = "0.12", default-features = false, features = ["model"] }
+teloxide = { version = "0.13" }

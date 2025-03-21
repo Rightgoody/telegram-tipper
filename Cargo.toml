@@ -3,14 +3,12 @@ resolver = '2'
 members = [
     'discord_bot',
     'telegram_bot',
-    'libs/core',
-]
-
-# define the default run for the workspace (discord_bot)
-default-members = [
-    'discord_bot',
-    'telegram_bot'
+    'libs/core', "libs/user",
 ]
 
 [profile.release]
 lto = true
+
+[workspace.dependencies]
+core = { path = "libs/core" }
+user = { path = "libs/user" }

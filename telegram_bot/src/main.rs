@@ -1,17 +1,20 @@
-use core::tip_context::TipContext;
-
+use core::{tip_context::TipContext, utils::check_node_status};
 use spectre_wallet_core::rpc::ConnectOptions;
 use spectre_wrpc_client::{
     Resolver, SpectreRpcClient, WrpcEncoding,
     prelude::{ConnectStrategy, NetworkId},
 };
 use std::{env, path::Path, str::FromStr, sync::Arc, time::Duration};
+use telegram_bot::{
+    commands::{Command, create::command_create},
+    error::{LoggingErrorHandler, TelegramBotError},
+};
 use tracing::{error, info, warn};
 use tracing_subscriber::EnvFilter;
+use user::user::TipUser;
 
-use core::utils::check_node_status;
-
-use teloxide::{dispatching::dialogue::GetChatId, prelude::*, utils::command::BotCommands};
+use teloxide::utils::command::BotCommands;
+use teloxide::{dispatching::dialogue::GetChatId, prelude::*};
 
 #[tokio::main]
 async fn main() {
@@ -136,24 +139,24 @@ async fn main() {
 
     info!("Starting Telegram bot...");
 
+    // registering command hints
+    match bot.set_my_commands(Command::bot_commands()).await {
+        Ok(_) => (),
+        Err(error) => {
+            error!("error while registering bot commands: {}", error);
+            ()
+        }
+    };
+
     Dispatcher::builder(bot, main_handler)
         .dependencies(dptree::deps![tip_context.unwrap()])
+        .error_handler(LoggingErrorHandler::with_custom_text(
+            "An error has occurred in the dispatcher",
+        ))
         .enable_ctrlc_handler()
         .build()
         .dispatch()
         .await;
-}
-
-#[derive(BotCommands, Clone)]
-#[command(
-    rename_rule = "lowercase",
-    description = "These commands are supported:"
-)]
-enum Command {
-    #[command(description = "display this text.")]
-    Help,
-    #[command(description = "display the node's network ID.")]
-    NetworkId,
 }
 
 async fn command_handler(
@@ -161,17 +164,36 @@ async fn command_handler(
     msg: Message,
     tip_context: Arc<TipContext>,
     cmd: Command,
-) -> ResponseResult<()> {
+) -> Result<(), TelegramBotError> {
+    let cloned_message = msg.clone();
+    let from = match msg.from {
+        Some(from) => from,
+        None => {
+            bot.send_message(msg.chat.id, "You must be a user to use this command.")
+                .await?;
+            return Ok(());
+        }
+    };
+
+    let tip_user = TipUser::from(from);
+
     match cmd {
         Command::Help => {
-            bot.send_message(msg.chat.id, Command::descriptions().to_string())
+            bot.send_message(cloned_message.chat.id, Command::descriptions().to_string())
                 .await?;
         }
         Command::NetworkId => {
             let network_id = tip_context.network_id();
-            bot.send_message(msg.chat.id, format!("Network ID: {}", network_id))
-                .await?;
+            bot.send_message(
+                cloned_message.chat.id,
+                format!("Network ID: {}", network_id),
+            )
+            .await?;
         }
+        Command::Create { password } => {
+            command_create(bot, &cloned_message, tip_context, &tip_user, password).await?
+        }
+        Command::Status => {}
     }
     Ok(())
 }

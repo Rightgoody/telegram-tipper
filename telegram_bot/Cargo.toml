@@ -6,7 +6,8 @@ edition = "2024"
 [dependencies]
 teloxide = { version = "0.13", features = ["macros"] }
 tokio = { version =  "1.8", features = ["rt-multi-thread", "macros"] }
-core = { path = "../libs/core" }
+core.workspace = true
+user.workspace = true
 spectre-wrpc-client = { git = "https://github.com/spectre-project/rusty-spectre.git", branch = "main" }
 spectre-wallet-core = { git = "https://github.com/spectre-project/rusty-spectre.git", branch = "main" }
 spectre-wallet-keys = { git = "https://github.com/spectre-project/rusty-spectre.git", branch = "main" }
@@ -14,3 +15,5 @@ workflow-core = { version = "0.18.0" }
 dotenvy = "0.15.7"
 tracing = "0.1"
 tracing-subscriber = {version = "0.3", features=["env-filter"]}
+thiserror = { version = "2", features=["std"] }
+futures = "0.3.31"
