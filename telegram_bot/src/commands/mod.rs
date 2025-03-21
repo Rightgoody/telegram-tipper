@@ -1,6 +1,8 @@
 use teloxide::macros::BotCommands;
 
 pub mod create;
+pub mod open;
+pub mod status;
 
 #[derive(BotCommands, Clone)]
 #[command(
@@ -19,4 +21,6 @@ pub enum Command {
     Create { password: String },
     #[command(description = "get the status of your wallet.")]
     Status,
+    #[command(description = "<password>, open your wallet with the password you set.")]
+    Open { password: String },
 }

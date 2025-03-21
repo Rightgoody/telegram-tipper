@@ -6,10 +6,10 @@ use spectre_wrpc_client::{
 };
 use std::{env, path::Path, str::FromStr, sync::Arc, time::Duration};
 use telegram_bot::{
-    commands::{Command, create::command_create},
+    commands::{Command, create::command_create, open::command_open, status::command_status},
     error::{LoggingErrorHandler, TelegramBotError},
 };
-use tracing::{error, info, warn};
+use tracing::{debug, error, info, warn};
 use tracing_subscriber::EnvFilter;
 use user::user::TipUser;
 
@@ -122,6 +122,7 @@ async fn main() {
         // default handler
         .branch(
             dptree::entry().endpoint(|bot: Bot, update: Update| async move {
+                debug!("Received update: {:?}", update);
                 match update.chat_id() {
                     Some(chat_id) => {
                         bot.send_message(chat_id, format!("Unknown command or argument format is not correct.\nPlease use /help to see the list of available commands.")).await?;
@@ -169,11 +170,23 @@ async fn command_handler(
     let from = match msg.from {
         Some(from) => from,
         None => {
-            bot.send_message(msg.chat.id, "You must be a user to use this command.")
+            bot.send_message(msg.chat.id, "You must be a user to use this bot.")
                 .await?;
             return Ok(());
         }
     };
+
+    if from.is_bot {
+        bot.send_message(msg.chat.id, "You must be a user to use this bot.")
+            .await?;
+        return Ok(());
+    }
+
+    if from.username.is_none() {
+        bot.send_message(msg.chat.id, "You must have a username to use this bot.")
+            .await?;
+        return Ok(());
+    }
 
     let tip_user = TipUser::from(from);
 
@@ -193,7 +206,10 @@ async fn command_handler(
         Command::Create { password } => {
             command_create(bot, &cloned_message, tip_context, &tip_user, password).await?
         }
-        Command::Status => {}
+        Command::Status => command_status(bot, &cloned_message, tip_context, &tip_user).await?,
+        Command::Open { password } => {
+            command_open(bot, &cloned_message, tip_context, &tip_user, password).await?
+        }
     }
     Ok(())
 }
