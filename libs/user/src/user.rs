@@ -19,8 +19,14 @@ impl TipUser {
         bot: &Bot,
         message: T,
     ) -> Result<(), RequestError> {
-        // replace every '.', '_' with '\\.' to escape markdown
-        let message = message.into().replace('.', "\\.").replace('_', "\\_");
+        // replace every '.', '_', '(', ')' with '\\.' to escape markdown
+        let message = message
+            .into()
+            .replace('.', "\\.")
+            .replace('_', "\\_")
+            .replace("(", "\\(")
+            .replace(")", "\\")
+            .replace("-", "\\-");
 
         bot.send_message(self.identifier(), message)
             .parse_mode(ParseMode::MarkdownV2)

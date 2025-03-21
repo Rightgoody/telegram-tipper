@@ -6,7 +6,12 @@ use spectre_wrpc_client::{
 };
 use std::{env, path::Path, str::FromStr, sync::Arc, time::Duration};
 use telegram_bot::{
-    commands::{Command, create::command_create, open::command_open, status::command_status},
+    commands::{
+        Command, change_password::command_change_password, claim::command_claim,
+        close::command_close, create::command_create, destroy::command_destroy,
+        export::command_export, open::command_open, restore::command_restore, send::command_send,
+        status::command_status, withdraw::command_withdraw,
+    },
     error::{LoggingErrorHandler, TelegramBotError},
 };
 use tracing::{debug, error, info, warn};
@@ -210,6 +215,69 @@ async fn command_handler(
         Command::Open { password } => {
             command_open(bot, &cloned_message, tip_context, &tip_user, password).await?
         }
+        Command::Close => command_close(bot, &cloned_message, tip_context, &tip_user).await?,
+        Command::Destroy => command_destroy(bot, &cloned_message, tip_context, &tip_user).await?,
+        Command::Export { password } => {
+            command_export(bot, &cloned_message, tip_context, &tip_user, password).await?
+        }
+        Command::ChangePassword {
+            old_password,
+            new_password,
+        } => {
+            command_change_password(
+                bot,
+                &cloned_message,
+                tip_context,
+                &tip_user,
+                old_password,
+                new_password,
+            )
+            .await?
+        }
+        Command::Restore { mnemonic, password } => {
+            command_restore(
+                bot,
+                &cloned_message,
+                tip_context,
+                &tip_user,
+                mnemonic,
+                password,
+            )
+            .await?
+        }
+        Command::Send {
+            amount,
+            password,
+            telegram_username,
+        } => {
+            command_send(
+                bot,
+                &cloned_message,
+                tip_context,
+                &tip_user,
+                password,
+                amount,
+                telegram_username,
+            )
+            .await?
+        }
+        Command::Withdraw {
+            address,
+            amount,
+            password,
+        } => {
+            command_withdraw(
+                bot,
+                &cloned_message,
+                tip_context,
+                &tip_user,
+                password,
+                address,
+                amount,
+            )
+            .await?
+        }
+        Command::Claim => command_claim(bot, &cloned_message, tip_context, &tip_user).await?,
     }
     Ok(())
 }

@@ -14,6 +14,8 @@ pub enum TelegramBotError {
     SpectreError(#[from] core::error::Error),
     #[error(transparent)]
     WalletError(#[from] spectre_wallet_core::error::Error),
+    #[error("{0}")]
+    Custom(String),
 }
 
 pub struct LoggingErrorHandler {
