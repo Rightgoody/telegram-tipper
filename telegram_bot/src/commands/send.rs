@@ -22,6 +22,7 @@ pub async fn command_send(
     password: String,
     amount: String,
     recipient_username: String,
+    tip_message: Option<String>, //optional tip message!
 ) -> Result<(), TelegramBotError> {
     let is_opened = tip_context.does_opened_owned_wallet_exists(tip_sender.wallet_identifier());
     let is_initiated = match is_opened {
@@ -156,7 +157,18 @@ pub async fn command_send(
         )
         .await?;
 
+    // private message sent to user from bot~
+    if let Some(message) = tip_message {
+        let recipient_chat_id = bot
+            .get_chat_id_from_user(&recipient_username)
+            .await
+            .map_err(|_| TelegramBotError::Custom("Failed to get reciever chat ID".to_string()))?;
+
+        bot.send_message(recipient_chat_id, message).await?;
+    }
     // @TODO(izio/tg): how to deal with private mentionning? Is this even possible?
+    //  -> https://stackoverflow.com/a/78459144  ~ Is this what you had mentioned to me?
+
 
     Ok(())
 }
