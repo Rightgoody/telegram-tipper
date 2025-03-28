@@ -2,8 +2,13 @@
 resolver = '2'
 members = [
     'discord_bot',
-    'libs/core',
+    'telegram_bot',
+    'libs/core', "libs/user",
 ]
 
 [profile.release]
 lto = true
+
+[workspace.dependencies]
+core = { path = "libs/core" }
+user = { path = "libs/user" }

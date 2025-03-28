@@ -11,7 +11,7 @@ spectre-rpc-core = { git = "https://github.com/spectre-project/rusty-spectre.git
 spectre-consensus-core = { git = "https://github.com/spectre-project/rusty-spectre.git", branch = "main" }
 spectre-addresses = { git = "https://github.com/spectre-project/rusty-spectre.git", branch = "main" }
 spectre-bip32 = { git = "https://github.com/spectre-project/rusty-spectre.git", branch = "main" }
-thiserror = { version = "1.0.64" }
+thiserror = { version = "2", features=["std"]}
 serde_json = "1.0"
 serde = "1.0"
 tokio = { version = "1", features = ["full", "rt"] }

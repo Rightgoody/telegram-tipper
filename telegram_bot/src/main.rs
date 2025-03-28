@@ -249,7 +249,9 @@ async fn command_handler(
             amount,
             password,
             telegram_username,
+
             message, //optional tip message~
+
         } => {
             command_send(
                 bot,
@@ -259,7 +261,9 @@ async fn command_handler(
                 password,
                 amount,
                 telegram_username,
+
                 message, //used to pass the message to function
+
             )
             .await?
         }

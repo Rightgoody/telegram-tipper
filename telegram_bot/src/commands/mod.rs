@@ -58,7 +58,7 @@ pub enum Command {
         telegram_username: String,
         amount: String,
         password: String,
-        
+
         message: Option<String>, // optional tip message!
 
     },
